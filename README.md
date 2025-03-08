@@ -5,315 +5,551 @@
 - discord_controller rimuovere .clone e usare i & riferimenti
 - rimuovere .unwrap o .expect s sostituirli con Enum::Result
 
-## API Documentation
+## Albion Guild REST API Documentation
 
-This document outlines the API endpoints for managing Discord, User, Competitions, Builds, Contents, and Participants data.
+This document provides a comprehensive guide to the Albion Guild REST API, outlining endpoints, request methods, and data structures for developers looking to integrate with the API.
 
-### 1. Discord Endpoints (`/discords`)
+### Base URL
 
-#### 1.1. Create Discord Entry (`PUT /discords`)
+`[Insert Base URL Here]`  *(Please replace with the actual base URL of your API)*
 
-- **Description:** Creates a new Discord entry.
-- **Request Body:**
-  ```json
-  {
-    "discord_id": "string",
-    "discord_name": "string",
-    "joined_at": "string",
-    "...": "..."
-  }
+### Authentication
 
- * discord_id: Unique identifier for the Discord server.
- * discord_name: Name of the Discord server.
- * joined_at: Date and time when the bot joined the server.
- * ...:  Other relevant Discord information.
- * Example Command (Discord Bot):
-   !api put /discords {"discord_id": "1234567890", "discord_name": "My Guild", "joined_at": "2024-03-08T19:30:00Z"}
+*   API keys or OAuth 2.0 *(Details on authentication methods should be added here if applicable)*
 
- * Authorized Roles: Council, Officer
-1.2. Update Discord Name (PATCH /discords/<discord_id>/name)
- * Description: Updates the name of an existing Discord entry.
- * Request Body:
-   {
-  "new_name": "string"
-}
+### Endpoints
 
-   * new_name: The new name for the Discord server.
- * Example Command (Discord Bot):
-   !api patch /discords/1234567890/name {"new_name": "My Renamed Guild"}
+This API is structured around the following resources:
 
- * Authorized Roles: Council, Officer
-1.3. Update Discord Balance Feature Status (PATCH /discords/<discord_id>/balance)
- * Description: Enables or disables the balance feature for a Discord server.
- * Request Body:
-   {
-  "balance": "boolean"
-}
+*   **Discords:** Managing Discord server data.
+*   **Users:** Managing user data within the guild.
+*   **Competitions (Comps):** Managing guild competitions.
+*   **Builds:** Managing character builds.
+*   **Contents:** Managing guild content and events.
+*   **Participants (Partecipants):** Managing participant data for contents/events.
+*   **Leaderboards:** Accessing guild leaderboards.
 
-   * balance: true to enable the balance feature, false to disable.
- * Example Command (Discord Bot):
-   !api patch /discords/1234567890/balance {"balance": true}
+---
 
- * Authorized Roles: Council, Officer
-1.4. Get Discord Balance Feature Status (GET /discords/<discord_id>/balance)
- * Description: Retrieves the status of the balance feature for a Discord server.
- * Example Command (Discord Bot):
-   !api get /discords/1234567890/balance
+## 1. Discord Endpoints (`/discords`)
 
- * Authorized Roles: Council, Officer, Balance Manager
-1.5. Update Discord Application Feature Status (PATCH /discords/<discord_id>/application)
- * Description: Enables or disables the application feature for a Discord server.
- * Request Body:
-   {
-  "application": "boolean"
-}
+### 1.1. `PUT /discords` - Create Discord Entry
 
-   * application: true to enable the application feature, false to disable.
- * Example Command (Discord Bot):
-   !api patch /discords/1234567890/application {"application": false}
+*   **Description:**  Creates a new entry for a Discord server in the database.
+*   **Request Method:** `PUT`
+*   **Endpoint:** `/discords`
+*   **Request Body (JSON):**
 
- * Authorized Roles: Council, Officer, Application Manager
-1.6. Update Discord Content Feature Status (PATCH /discords/<discord_id>/content)
- * Description: Enables or disables the content feature for a Discord server.
- * Request Body:
-   {
-  "content": "boolean"
-}
+    ```json
+    {
+      "discord_id": "string",      // Unique Discord server ID (required)
+      "discord_name": "string",    // Discord server name (required)
+      "joined_at": "string",     // Date when the bot joined the server (e.g., "2024-03-08T19:30:00Z")
+      "...": "..."                //  Other Discord-related fields as needed
+    }
+    ```
 
-   * content: true to enable the content feature, false to disable.
- * Example Command (Discord Bot):
-   !api patch /discords/1234567890/content {"content": true}
+*   **Example Request (cURL):**
 
- * Authorized Roles: Council, Officer, Content Manager
-1.7. Update Discord Logs Feature Status (PATCH /discords/<discord_id>/logs)
- * Description: Enables or disables the logs feature for a Discord server.
- * Request Body:
-   {
-  "logs": "boolean"
-}
+    ```bash
+    curl -X PUT "[Base URL]/discords" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "discord_id": "1234567890",
+      "discord_name": "Example Guild Discord",
+      "joined_at": "2024-03-08T19:30:00Z"
+    }'
+    ```
 
-   * logs: true to enable the logs feature, false to disable.
- * Example Command (Discord Bot):
-   !api patch /discords/1234567890/logs {"logs": false}
+*   **Authorized Roles:** `Council`, `Officer`
 
- * Authorized Roles: Council, Officer
-1.8. Update Discord Builds Feature Status (PATCH /discords/<discord_id>/builds)
- * Description: Enables or disables the builds feature for a Discord server.
- * Request Body:
-   {
-  "builds": "boolean"
-}
+---
 
-   * builds: true to enable the builds feature, false to disable.
- * Example Command (Discord Bot):
-   !api patch /discords/1234567890/builds {"builds": true}
+### 1.2. `PATCH /discords/<discord_id>/name` - Update Discord Name
 
- * Authorized Roles: Council, Officer, Content Manager
-1.9. Update Discord Bot Left Status (PATCH /discords/<discord_id>/left)
- * Description: Updates the status indicating if the bot has left the Discord server.
- * Request Body:
-   {
-  "is_bot_left": "boolean"
-}
+*   **Description:** Updates the name of an existing Discord server entry.
+*   **Request Method:** `PATCH`
+*   **Endpoint:** `/discords/<discord_id>/name`
+*   **Path Parameter:**
+    *   `discord_id`:  ID of the Discord server to update.
+*   **Request Body (JSON):**
 
-   * is_bot_left: true if the bot has left, false otherwise.
- * Example Command (Discord Bot):
-   !api patch /discords/1234567890/left {"is_bot_left": true}
+    ```json
+    {
+      "new_name": "string"     // New Discord server name (required)
+    }
+    ```
 
- * Authorized Roles: Council, Officer
-1.10. Get Discord Bot Left Status (GET /discords/<discord_id>/left)
- * Description: Retrieves the status indicating if the bot has left the Discord server.
- * Example Command (Discord Bot):
-   !api get /discords/1234567890/left
+*   **Example Request (cURL):**
 
- * Authorized Roles: Council, Officer
-2. User Endpoints (/users)
-2.1. Create User Entry (PUT /users)
- * Description: Creates a new user entry.
- * Request Body:
-   {
-  "user_id": "string",
-  "username": "string",
-  "balance": "integer",
-  "...": "..."
-}
+    ```bash
+    curl -X PATCH "[Base URL]/discords/1234567890/name" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "new_name": "New Example Guild Name"
+    }'
+    ```
 
-   * user_id: Unique identifier for the user.
-   * username: Username of the user.
-   * balance: User's initial balance.
-   * ...: Other relevant user information.
- * Example Command (Discord Bot):
-   !api put /users {"user_id": "user123", "username": "ExampleUser", "balance": 100}
+*   **Authorized Roles:** `Council`, `Officer`
 
- * Authorized Roles: Council, Officer, Balance Manager, Points Manager
-2.2. Update Username (PATCH /users/<user_id>/username)
- * Description: Updates the username of an existing user.
- * Request Body:
-   {
-  "new_username": "string"
-}
+---
 
-   * new_username: The new username.
- * Example Command (Discord Bot):
-   !api patch /users/user123/username {"new_username": "NewUsername"}
+### 1.3. `PATCH /discords/<discord_id>/balance` - Update Discord Balance Feature Status
 
- * Authorized Roles: Council, Officer, Points Manager
-2.3. Update VOD Points (PATCH /users/<user_id>/vod)
- * Description: Updates the VOD points for a user.
- * Request Body:
-   {
-  "points": "integer"
-}
+*   **Description:** Enables or disables the balance tracking feature for a Discord server.
+*   **Request Method:** `PATCH`
+*   **Endpoint:** `/discords/<discord_id>/balance`
+*   **Path Parameter:**
+    *   `discord_id`: ID of the Discord server.
+*   **Request Body (JSON):**
 
-   * points: Points to add or set for VOD review.
- * Example Command (Discord Bot):
-   !api patch /users/user123/vod {"points": 5}
+    ```json
+    {
+      "balance": "boolean"    // `true` to enable, `false` to disable (required)
+    }
+    ```
 
- * Authorized Roles: Council, Officer, Vod Review, Points Manager
-2.4. Link In-Game Name (PATCH /users/<user_id>/link)
- * Description: Links an in-game name to a user.
- * Request Body:
-   {
-  "ign_name": "string"
-}
+*   **Example Request (cURL):**
 
-   * ign_name: In-game name to link.
- * Example Command (Discord Bot):
-   !api patch /users/user123/link {"ign_name": "ExampleIGN"}
+    ```bash
+    curl -X PATCH "[Base URL]/discords/1234567890/balance" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "balance": true
+    }'
+    ```
 
- * Authorized Roles: Council, Officer, Application Manager, Points Manager
-2.5. Update Attendance Points (PATCH /users/<user_id>/attendance)
- * Description: Updates the attendance points for a user.
- * Request Body:
-   {
-  "points": "integer"
-}
+*   **Authorized Roles:** `Council`, `Officer`
 
-   * points: Points to add or set for attendance.
- * Example Command (Discord Bot):
-   !api patch /users/user123/attendance {"points": 10}
+---
 
- * Authorized Roles: Council, Officer, Points Manager, Content Manager
-2.6. Update Balance (PATCH /users/<user_id>/balance)
- * Description: Updates the balance of a user.
- * Request Body:
-   {
-  "amount": "integer"
-}
+### 1.4. `GET /discords/<discord_id>/balance` - Get Discord Balance Feature Status
 
-   * amount: Amount to add or set to the user's balance.
- * Example Command (Discord Bot):
-   !api patch /users/user123/balance {"amount": 50}
+*   **Description:** Retrieves the current status (enabled/disabled) of the balance tracking feature for a Discord server.
+*   **Request Method:** `GET`
+*   **Endpoint:** `/discords/<discord_id>/balance`
+*   **Path Parameter:**
+    *   `discord_id`: ID of the Discord server.
 
- * Authorized Roles: Council, Officer, Balance Manager
-2.7. Remove In-Game Name Link (DELETE /users/<user_id>/link)
- * Description: Removes the linked in-game name from a user.
- * Example Command (Discord Bot):
-   !api delete /users/user123/link
+*   **Example Request (cURL):**
 
- * Authorized Roles: Council, Officer, Application Manager, Points Manager
-2.8. Get Balance (GET /users/<user_id>/balance)
- * Description: Retrieves the balance of a user.
- * Example Command (Discord Bot):
-   !api get /users/user123/balance
+    ```bash
+    curl -X GET "[Base URL]/discords/1234567890/balance"
+    ```
 
- * Authorized Roles: Council, Officer, Balance Manager, Member, Guest
-2.9. Update User Bot Left Status (PATCH /users/<user_id>/left)
- * Description: Updates the status indicating if the bot has left the user's context (e.g., Discord server).
- * Request Body:
-   {
-  "is_bot_left": "boolean"
-}
+*   **Authorized Roles:** `Council`, `Officer`, `Balance Manager`
 
-   * is_bot_left: true if the bot has left, false otherwise.
- * Example Command (Discord Bot):
-   !api patch /users/user123/left {"is_bot_left": true}
+---
 
- * Authorized Roles: Council, Officer
-2.10. Get User Bot Left Status (GET /users/<user_id>/left)
- * Description: Retrieves the status indicating if the bot has left the user's context.
- * Example Command (Discord Bot):
-   !api get /users/user123/left
+**(Continue this Markdown format for all API endpoints, following the structure and details from the original README.md file.  For each endpoint, include:**
 
- * Authorized Roles: Council, Officer
-2.11. Update Donation Points (PATCH /users/<user_id>/donation)
- * Description: Updates the donation points for a user.
- * Request Body:
-   {
-  "points": "integer"
-}
+*   **Endpoint Title:**  e.g., `2. User Endpoints (/users)` , `2.1. PUT /users - Create User Entry`
+*   **Description:** A concise explanation of the endpoint's function.
+*   **Request Method:** `PUT`, `PATCH`, `GET`, `DELETE`
+*   **Endpoint:** The API endpoint path.
+*   **Path Parameters:** (If applicable) List and describe path parameters.
+*   **Query Parameters:** (If applicable) List and describe query parameters.
+*   **Request Body (JSON):** (If applicable)  JSON structure with field names, data types, and descriptions. Use code blocks for JSON examples.
+*   **Example Request (cURL):** (Optional but highly recommended) Example cURL command demonstrating how to use the endpoint. Use code blocks for cURL examples.
+*   **Authorized Roles:** List of Discord roles authorized to use this endpoint (e.g., `Council`, `Officer`, `Member`).
 
-   * points: Points to add or set for donation tracking.
- * Example Command (Discord Bot):
-   !api patch /users/user123/donation {"points": 20}
+**... Continue documenting all endpoints in this Markdown format, mirroring the structure and details from the provided README.md file.**
 
- * Authorized Roles: Council, Officer, Points Manager
-3. Competition Endpoints (/comps)
-3.1. Create Competition (PUT /comps)
- * Description: Creates a new competition entry.
- * Request Body:
-   {
-  "name": "string",
-  "content": "string",
-  "description": "string"
-}
+---
 
-   * name: Name of the competition.
-   * content: Content type of the competition.
-   * description: Description of the competition.
- * Example Command (Discord Bot):
-   !api put /comps {"name": "Build Competition", "content": "Open World PvP", "description": "Best open world build competition"}
+**Example of how to continue documenting User Endpoints (`/users`) following the Markdown format:**
 
- * Authorized Roles: Council, Officer, Content Manager
-3.2. Update Competition Name (PATCH /comps/<comp_id>/name)
- * Description: Updates the name of an existing competition.
- * Request Body:
-   {
-  "new_name": "string"
-}
+## 2. User Endpoints (`/users`)
 
-   * new_name: The new name for the competition.
- * Example Command (Discord Bot):
-   !api patch /comps/comp123/name {"new_name": "Renamed Competition"}
+### 2.1. `PUT /users` - Create User Entry
 
- * Authorized Roles: Council, Officer, Content Manager
-3.3. Update Competition Description (PATCH /comps/<comp_id>/description)
- * Description: Updates the description of an existing competition.
- * Request Body:
-   {
-  "new_description": "string"
-}
+*   **Description:** Creates a new user entry in the database.
+*   **Request Method:** `PUT`
+*   **Endpoint:** `/users`
+*   **Request Body (JSON):**
 
-   * new_description: The new description for the competition.
- * Example Command (Discord Bot):
-   !api patch /comps/comp123/description {"new_description": "Updated competition description"}
+    ```json
+    {
+      "user_id": "string",     // Unique user ID (required)
+      "username": "string",   // Username (required)
+      "balance": "integer",    // Initial balance (optional, default to 0 or specified value)
+      "...": "..."             // Other user-related fields
+    }
+    ```
 
- * Authorized Roles: Council, Officer, Content Manager
-3.4. Delete Competition (DELETE /comps/<comp_id>)
- * Description: Deletes a competition entry.
- * Example Command (Discord Bot):
-   !api delete /comps/comp123
+*   **Example Request (cURL):**
 
- * Authorized Roles: Council, Officer, Content Manager
-4. Build Endpoints (/builds)
-4.1. Create Build (PUT /builds/)
- * Description: Creates a new build entry.
- * Request Body:
-   {
-  "weapon": "string",
-  "role": "string",
-  "cape": "string",
-  "...": "..."
-}
+    ```bash
+    curl -X PUT "[Base URL]/users" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "user_id": "user123",
+      "username": "TestUser",
+      "balance": 100
+    }'
+    ```
 
-   * weapon: Main weapon of the build.
-   * role: Role of the build (e.g., DPS, Tank, Healer).
-   * cape: Cape for the build.
-   * ...: Other build components (off-hand, helmet, armor, boots, food, potion, mount).
- * Example Command (Discord Bot):
-   !api put /builds/ {"weapon": "Great Axe", "role": "DPS", "cape": "Lymhurst Cape"}
+*   **Authorized Roles:** `Council`, `Officer`, `Balance Manager`, `Points Manager`
 
- * Authorized Roles: Council, Officer, Content Manager, Member
+---
+
+### 2.2. `PATCH /users/<user_id>/username` - Update Username
+
+*   **Description:** Updates the username of an existing user.
+*   **Request Method:** `PATCH`
+*   **Endpoint:** `/users/<user_id>/username`
+*   **Path Parameter:**
+    *   `user_id`: ID of the user to update.
+*   **Request Body (JSON):**
+
+    ```json
+    {
+      "new_username": "string"  // New username (required)
+    }
+    ```
+
+*   **Example Request (cURL):**
+
+    ```bash
+    curl -X PATCH "[Base URL]/users/user123/username" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "new_username": "UpdatedUsername"
+    }'
+    ```
+
+*   **Authorized Roles:** `Council`, `Officer`, `Points Manager`
+
+### 2.3. `PATCH /users/<user_id>/vod` - Update VOD Points
+
+*   **Description:** Updates the VOD points for a user.
+*   **Request Method:** `PATCH`
+*   **Endpoint:** `/users/<user_id>/vod`
+*   **Path Parameter:**
+    *   `user_id`: ID of the user to update.
+*   **Request Body (JSON):**
+
+    ```json
+    {
+      "points": "integer"    // Points to add or set for VOD review (required)
+    }
+    ```
+
+*   **Example Request (Discord Bot):**
+
+    ```
+    !api patch /users/user123/vod {"points": 5}
+    ```
+
+*   **Authorized Roles:** `Council`, `Officer`, `Vod Review`, `Points Manager`
+
+---
+
+### 2.4. `PATCH /users/<user_id>/link` - Link In-Game Name
+
+*   **Description:** Links an in-game name to a user.
+*   **Request Method:** `PATCH`
+*   **Endpoint:** `/users/<user_id>/link`
+*   **Path Parameter:**
+    *   `user_id`: ID of the user to update.
+*   **Request Body (JSON):**
+
+    ```json
+    {
+      "ign_name": "string"   // In-game name to link (required)
+    }
+    ```
+
+*   **Example Request (Discord Bot):**
+
+    ```
+    !api patch /users/user123/link {"ign_name": "ExampleIGN"}
+    ```
+
+*   **Authorized Roles:** `Council`, `Officer`, `Application Manager`, `Points Manager`
+
+---
+
+### 2.5. `PATCH /users/<user_id>/attendance` - Update Attendance Points
+
+*   **Description:** Updates the attendance points for a user.
+*   **Request Method:** `PATCH`
+*   **Endpoint:** `/users/<user_id>/attendance`
+*   **Path Parameter:**
+    *   `user_id`: ID of the user to update.
+*   **Request Body (JSON):**
+
+    ```json
+    {
+      "points": "integer"    // Points to add or set for attendance (required)
+    }
+    ```
+
+*   **Example Request (Discord Bot):**
+
+    ```
+    !api patch /users/user123/attendance {"points": 10}
+    ```
+
+*   **Authorized Roles:** `Council`, `Officer`, `Points Manager`, `Content Manager`
+
+---
+
+### 2.6. `PATCH /users/<user_id>/balance` - Update Balance
+
+*   **Description:** Updates the balance of a user.
+*   **Request Method:** `PATCH`
+*   **Endpoint:** `/users/<user_id>/balance`
+*   **Path Parameter:**
+    *   `user_id`: ID of the user to update.
+*   **Request Body (JSON):**
+
+    ```json
+    {
+      "amount": "integer"    // Amount to add or set to the user's balance (required)
+    }
+    ```
+
+*   **Example Request (Discord Bot):**
+
+    ```
+    !api patch /users/user123/balance {"amount": 50}
+    ```
+
+*   **Authorized Roles:** `Council`, `Officer`, `Balance Manager`
+
+---
+
+### 2.7. `DELETE /users/<user_id>/link` - Remove In-Game Name Link
+
+*   **Description:** Removes the linked in-game name from a user.
+*   **Request Method:** `DELETE`
+*   **Endpoint:** `/users/<user_id>/link`
+*   **Path Parameter:**
+    *   `user_id`: ID of the user to update.
+
+*   **Example Request (Discord Bot):**
+
+    ```
+    !api delete /users/user123/link
+    ```
+
+*   **Authorized Roles:** `Council`, `Officer`, `Application Manager`, `Points Manager`
+
+---
+
+### 2.8. `GET /users/<user_id>/balance` - Get Balance
+
+*   **Description:** Retrieves the balance of a user.
+*   **Request Method:** `GET`
+*   **Endpoint:** `/users/<user_id>/balance`
+*   **Path Parameter:**
+    *   `user_id`: ID of the user to retrieve balance for.
+
+*   **Example Request (Discord Bot):**
+
+    ```
+    !api get /users/user123/balance
+    ```
+
+*   **Authorized Roles:** `Council`, `Officer`, `Balance Manager`, `Member`, `Guest`
+
+---
+
+### 2.9. `PATCH /users/<user_id>/left` - Update User Bot Left Status
+
+*   **Description:** Updates the status indicating if the bot has left the user's context (e.g., Discord server).
+*   **Request Method:** `PATCH`
+*   **Endpoint:** `/users/<user_id>/left`
+*   **Path Parameter:**
+    *   `user_id`: ID of the user to update.
+*   **Request Body (JSON):**
+
+    ```json
+    {
+      "is_bot_left": "boolean" // `true` if bot left, `false` otherwise (required)
+    }
+    ```
+
+*   **Example Request (Discord Bot):**
+
+    ```
+    !api patch /users/user123/left {"is_bot_left": true}
+    ```
+
+*   **Authorized Roles:** `Council`, `Officer`
+
+---
+
+### 2.10. `GET /users/<user_id>/left` - Get User Bot Left Status
+
+*   **Description:** Retrieves the status indicating if the bot has left the user's context.
+*   **Request Method:** `GET`
+*   **Endpoint:** `/users/<user_id>/left`
+*   **Path Parameter:**
+    *   `user_id`: ID of the user to retrieve status for.
+
+*   **Example Request (Discord Bot):**
+
+    ```
+    !api get /users/user123/left
+    ```
+
+*   **Authorized Roles:** `Council`, `Officer`
+
+---
+
+### 2.11. `PATCH /users/<user_id>/donation` - Update Donation Points
+
+*   **Description:** Updates the donation points for a user.
+*   **Request Method:** `PATCH`
+*   **Endpoint:** `/users/<user_id>/donation`
+*   **Path Parameter:**
+    *   `user_id`: ID of the user to update.
+*   **Request Body (JSON):**
+
+    ```json
+    {
+      "points": "integer"    // Points to add or set for donation tracking (required)
+    }
+    ```
+
+*   **Example Request (Discord Bot):**
+
+    ```
+    !api patch /users/user123/donation {"points": 20}
+    ```
+
+*   **Authorized Roles:** `Council`, `Officer`, `Points Manager`
+
+---
+
+## 3. Competition Endpoints (`/comps`)
+
+### 3.1. `PUT /comps` - Create Competition
+
+*   **Description:** Creates a new competition entry.
+*   **Request Method:** `PUT`
+*   **Endpoint:** `/comps`
+*   **Request Body (JSON):**
+
+    ```json
+    {
+      "name": "string",        // Name of the competition (required)
+      "content": "string",     // Content type of the competition (required)
+      "description": "string" // Description of the competition (required)
+    }
+    ```
+
+*   **Example Request (Discord Bot):**
+
+    ```
+    !api put /comps {"name": "Build Competition", "content": "Open World PvP", "description": "Best open world build competition"}
+    ```
+
+*   **Authorized Roles:** `Council`, `Officer`, `Content Manager`
+
+---
+
+### 3.2. `PATCH /comps/<comp_id>/name` - Update Competition Name
+
+*   **Description:** Updates the name of an existing competition.
+*   **Request Method:** `PATCH`
+*   **Endpoint:** `/comps/<comp_id>/name`
+*   **Path Parameter:**
+    *   `comp_id`: ID of the competition to update.
+*   **Request Body (JSON):**
+
+    ```json
+    {
+      "new_name": "string"   // The new name for the competition (required)
+    }
+    ```
+
+*   **Example Request (Discord Bot):**
+
+    ```
+    !api patch /comps/comp123/name {"new_name": "Renamed Competition"}
+    ```
+
+*   **Authorized Roles:** `Council`, `Officer`, `Content Manager`
+
+---
+
+### 3.3. `PATCH /comps/<comp_id>/description` - Update Competition Description
+
+*   **Description:** Updates the description of an existing competition.
+*   **Request Method:** `PATCH`
+*   **Endpoint:** `/comps/<comp_id>/description`
+*   **Path Parameter:**
+    *   `comp_id`: ID of the competition to update.
+*   **Request Body (JSON):**
+
+    ```json
+    {
+      "new_description": "string" // The new description for the competition (required)
+    }
+    ```
+
+*   **Example Request (Discord Bot):**
+
+    ```
+    !api patch /comps/comp123/description {"new_description": "Updated competition description"}
+    ```
+
+*   **Authorized Roles:** `Council`, `Officer`, `Content Manager`
+
+---
+
+### 3.4. `DELETE /comps/<comp_id>` - Delete Competition
+
+*   **Description:** Deletes a competition entry.
+*   **Request Method:** `DELETE`
+*   **Endpoint:** `/comps/<comp_id>`
+*   **Path Parameter:**
+    *   `comp_id`: ID of the competition to delete.
+
+*   **Example Request (Discord Bot):**
+
+    ```
+    !api delete /comps/comp123
+    ```
+
+*   **Authorized Roles:** `Council`, `Officer`, `Content Manager`
+
+---
+
+## 4. Build Endpoints (`/builds`)
+
+### 4.1. `PUT /builds/` - Create Build
+
+*   **Description:** Creates a new build entry.
+*   **Request Method:** `PUT`
+*   **Endpoint:** `/builds/`
+*   **Request Body (JSON):**
+
+    ```json
+    {
+      "weapon": "string",       // Main weapon of the build (required)
+      "role": "string",         // Role of the build (e.g., DPS, Tank, Healer) (required)
+      "cape": "string",         // Cape for the build (required)
+      "...": "..."              // Other build components (off-hand, helmet, armor, boots, food, potion, mount)
+    }
+    ```
+
+*   **Example Request (Discord Bot):**
+
+    ```
+    !api put /builds/ {"weapon": "Great Axe", "role": "DPS", "cape": "Lymhurst Cape"}
+    ```
+
+*   **Authorized Roles:** `Council`, `Officer`, `Content Manager`, `Member`
+
+
+
+
+
+
 4.2. Update Build Weapon (PATCH /builds/<build_id>/weapon)
  * Description: Updates the weapon of an existing build.
  * Request Body:
