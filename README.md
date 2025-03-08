@@ -584,4 +584,36 @@ This document outlines the API endpoints for managing Discord, User, Competition
 
  * Authorized Roles: Council, Officer, Points Manager, Member, Guest
 7.3. Get Attendance Leaderboard (GET /leaderboards/<discord_id>/attendance)
- * Description: Retrieves the attendance leaderboard for a
+ * Description: Retrieves the attendance leaderboard for a Discord server.
+ * Query Parameters:
+   * limit: (Optional) Maximum number of entries to return (default: 50, can be customized).
+   * linked: (Optional) Filter by linked users (true for linked users, false for unlinked users, default: true).
+ * Example Command (Discord Bot):
+   !api get /leaderboards/1234567890/points?limit=100&linked=true
+
+ * Authorized Roles: Council, Officer, Points Manager, Member, Guest
+7.3. Get Attendance Leaderboard (GET /leaderboards/<discord_id>/attendance)
+ * Description: Retrieves the attendance leaderboard for a Discord server.
+ * Query Parameters:
+   * limit: (Optional) Maximum number of entries to return (default: 50, can be customized).
+   * linked: (Optional) Filter by linked users (true for linked users, false for unlinked users, default: true).
+ * Example Command (Discord Bot):
+   !api get /leaderboards/1234567890/attendance?limit=50
+
+ * Authorized Roles: Council, Officer, Points Manager, Content Manager, Member, Guest
+7.4. Get VOD Review Leaderboard (GET /leaderboards/<discord_id>/vod)
+ * Description: Retrieves the VOD review points leaderboard for a Discord server.
+ * Query Parameters:
+   * limit: (Optional) Maximum number of entries to return (default: 50, can be customized).
+   * linked: (Optional) Filter by linked users (true for linked users, false for unlinked users, default: true).
+ * Example Command (Discord Bot):
+   !api get /leaderboards/1234567890/vod?limit=50
+
+ * Authorized Roles: Council, Officer, Vod Review, Points Manager, Member, Guest
+7.5. Get Donation Leaderboard (GET /leaderboards/<discord_id>/donation)
+ * Description: Retrieves the donation points leaderboard for a Discord server.
+ * Query Parameters:
+   * limit: (Optional) Maximum number of entries to return (default: 50, can be customized).
+   * linked: (Optional) Filter by linked users (true for linked users, false for unlinked users, default: true).
+ * Example Command (Discord Bot):
+   !api get /leaderboards/1234567890/donation?limit=50
